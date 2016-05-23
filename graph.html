@@ -12,13 +12,6 @@ title: Home
           font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
         }
 
-        /*.ui-autocomplete {
-            font-size: 13px;
-            height: 300px;
-            width: 150px;
-            overflow: scroll;
-        }*/
-
         axis text {
           font: 10px sans-serif;
         }
@@ -58,7 +51,13 @@ title: Home
     });
     
     $( "#phil" ).on( "autocompleteselect", function( event, ui ) {
-		d3.selectAll('.node').filter(function(n){return n.name==ui.item.value}).style('visibility', 'visible').each(function(d){clearColour(); updateNeighbours(d)})
+		d3.selectAll('.node').filter(function(n){return n.name==ui.item.value})
+		  .style('visibility', 'visible')
+		  .style('fill', 'pink')
+		  .each(function(d){
+		  	clearColour();
+		  	updateNeighbours(d);
+		  	displayInfo(d)})
 		});
 
     var width = $("#d3cont").width(), height = 400;
@@ -150,8 +149,7 @@ title: Home
       if (d3.event.type == 'click'){
         if (toggle==0){
           d3.select(this).select('circle').style('fill', 'pink');
-          influences = d3.selectAll('.node').filter(function(n){return isInfluenceOf(data, n)}).select('circle').style('fill', 'red');
-          d3.selectAll('.node').filter(function(n){return isFollowerOf(data, n)}).select('circle').style('fill', '#31333a');
+          updateNeighbours(data);
           displayInfo(data);
           toggle = 1
         }
