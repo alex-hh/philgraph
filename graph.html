@@ -45,7 +45,7 @@ title: Home
             // var g = Object.create(force);
             // g.prototype.addNodes or whatever
 
-    $.getJSON("{{site.github.url}}/public/graph.json", function(data){
+    $.getJSON("{{ site.github.url }}/public/graph.json", function(data){
       var phils = data.nodes.map(function(obj){
         return obj.name;
       });
@@ -177,7 +177,7 @@ title: Home
     var links = []
 
     $.ajax({
-      url: '{{site.github.url}}/public/graph.json',
+      url: '{{ site.github.url }}/public/graph.json',
       dataType: 'json',
       success: function(data){
         nodes = data.nodes;
