@@ -45,20 +45,34 @@
         }
 
       @media(max-width: 992px){
-        ul.navbar-nav {
-          padding-right: 30px;
+        ul.inline-nav {
+          padding-right: 100px !important;
         }
+      @media(max-width: 768px){
+        ul.inline-nav {
+          padding-right: 30px !important;
         }
+      }
+        }
+        .inline-nav>li>a{
+          padding-top: 15px;
+          padding-bottom: 15px;
+          color: #777;
+        }
+        .inline-nav>li{
+          float: left;
+        }
+
     </style>
 
 </head>
 
 <body>
-  <nav class="navbar navbar-default" style="margin-bottom: 0; margin-right: -300px;">
+  <nav class="navbar navbar-default" style="margin-bottom: 0; margin-right: 0;">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header" style="width: 100%; padding-left: 20px; ">
-      <ul class="nav navbar-nav" style="padding-right: 100px;">
+      <ul class="nav inline-nav" style="padding-right: 250px; float: left; margin: 0">
         <li><a href="{{ site.github.url }}">About</a></li>
         <li><a href="{{ site.github.url }}">Method</a></li>
       </ul>
@@ -67,7 +81,7 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <!-- jquery ui enter -->
-      <form class="navbar-form navbar-left" role="search">
+      <form class="navbar-form" role="search" style="border: 0 !important;">
         <div class="form-group">
           <input type="text" id="phil" class="form-control" placeholder="Search">
         </div>
