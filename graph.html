@@ -51,14 +51,20 @@ title: Home
     });
     
     $( "#phil" ).on( "autocompleteselect", function( event, ui ) {
-		d3.selectAll('.node').filter(function(n){return n.name==ui.item.value})
-		  .style('visibility', 'visible')
-		  .style('fill', 'pink')
-		  .each(function(d){
-		  	clearColour();
-		  	updateNeighbours(d);
-		  	displayInfo(d)})
-		});
+    	var target = d3.selectAll('.node').filter(function(n){return n.name==ui.item.value})
+
+    	target.style('visibility', 'visible')
+		  		.each(function(d){
+				  	clearColour();
+				  	updateNeighbours(d);
+				  	displayInfo(d)
+				  })
+
+    	target.select('circle').style('fill', 'pink')
+		  
+			})
+
+		  
 
     var width = $("#d3cont").width(), height = 400;
 
