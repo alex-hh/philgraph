@@ -137,13 +137,15 @@ title: Home
     	influences = d3.selectAll('.node').filter(function(n){return isInfluenceOf(data, n)})
       	var influencesNames = []
       	var influencedNames = []
-      	influences.each(function(n){if (influencesNames.indexOf(n.name) == -1) {influencesNames.push(n.name)}})
+      	influences.each(function(n){if (influencesNames.map(function(n){return n.name}).indexOf(n.name) == -1) {influencesNames.push({'name': n.name, 'yob': n.yob})}
+      	})
       	influences.select('circle').style('fill', 'red')
       	influenced = d3.selectAll('.node').filter(function(n){return isFollowerOf(data, n)})
-      	influenced.each(function(n){if (influencedNames.indexOf(n.name) == -1) {influencedNames.push(n.name)}})
+      	influenced.each(function(n){if (influencedNames.map(function(n){return n.name}).indexOf(n.name) == -1) {influencedNames.push({'name': n.name, 'yob': n.yob})}
+      	})
       	influenced.select('circle').style('fill', '#31333a')
-      	ns = influencesNames.join(', ');
-      	nsd = influencedNames.join(', ');
+      	ns = influencesNames.sort(function(a,b){return a.yob-b.yob}).map(function(r){return r.name}).join(', ');
+      	nsd = influencedNames.sort(function(a,b){return a.yob-b.yob}).map(function(r){return r.name}).join(', ');
 
       	$(philInfluences).css('visibility', 'visible');
       	$(influenceList).text(ns);
