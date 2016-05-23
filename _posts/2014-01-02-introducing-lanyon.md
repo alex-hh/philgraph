@@ -7,7 +7,7 @@ This is a collection of pages built to explore the data on philosophical influen
 
 ### Visualizations
 
-* [Philosophy influence network](philgraph/phil_graph/)
+* [Philosophy influence network](philgraph/graph/)
 
 ### Links
 
