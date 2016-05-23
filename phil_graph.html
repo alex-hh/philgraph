@@ -1,0 +1,312 @@
+---
+layout: graph
+title: Home
+---
+
+<div id="d3cont" style="margin-top: 50px;">
+
+</div>
+<!-- <button id="menu-toggle">hide sidebar</button> -->
+<style>
+        body {
+          font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        }
+
+        /*.ui-autocomplete {
+            font-size: 13px;
+            height: 300px;
+            width: 150px;
+            overflow: scroll;
+        }*/
+
+        axis text {
+          font: 10px sans-serif;
+        }
+
+        .axis line,
+        .axis path {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+        .link {
+          stroke: #999;
+          stroke-opacity: .6;
+        }
+        .node text {
+          pointer-events: none;
+          font: 10px sans-serif;
+        }
+</style>
+
+<script type="text/javascript">
+// zoom and pan http://samples.msdn.microsoft.com/workshop/samples/svg/zoomAndPan/orgChart.html
+        // synchronously initialize nodes
+            // var g = Object.create(force);
+            // g.prototype.addNodes or whatever
+
+    $.getJSON("/public/graph.json", function(data){
+      var phils = data.nodes.map(function(obj){
+        return obj.name;
+      });
+      $("#phil").autocomplete({
+        source: phils,
+        position: {
+        	at: 'left bottom+10'
+        }
+      });
+    });
+    
+    $( "#phil" ).on( "autocompleteselect", function( event, ui ) {
+		d3.selectAll('.node').filter(function(n){return n.name==ui.item.value}).style('visibility', 'visible').each(function(d){clearColour(); updateNeighbours(d)})
+		});
+
+    var width = $("#d3cont").width(), height = 400;
+
+    var force = d3.layout.force()
+                .charge(-90)
+                .linkDistance(100)
+                .gravity(0.05)
+                .friction(0.2)
+                .size([width, height])
+    
+    var drag = force.drag()
+        .on("dragstart", dragstart)
+        .on("drag", dragmove);
+      
+    force.on("tick", tick);
+
+    // to ease the strain I could actually start out by only including nodes with one or more connections, or I could include the degree
+    // of each node in the json
+
+    var svg = d3.select("#d3cont").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                // .style("border-width", 0.5)
+                // .style("border-style", 'solid')
+                // .style("border-color", '#e3e3e3');
+        
+    
+    function dragstart(d) {
+         d3.select(this).classed("fixed", d.fixed = true);
+    }
+
+    // so I can distort the graph by changing the sx and sy coords - but it'd be good to have a way to reset.
+    function dragmove(d, i) {
+       d.px += d3.event.dx;
+       d.py += d3.event.dy;
+       d.cx += d3.event.dx;
+       d.x += d3.event.dx;
+       d.y += d3.event.dy;
+	}
+
+    function releasenode(d) {
+      // reset x coordinate to starting value
+        d.cx = d.sx;
+        d.fixed = false; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+        //force.resume();
+    }
+
+    function isInfluenceOf(a, b) {
+      // return true if there is some link that goes from b to a
+      return links.some(function(d) {
+        return (d.source === b && d.target === a);
+        });
+      }
+
+    function isFollowerOf(a, b) {
+      // return true if there is some link that goes from a to b
+      return links.some(function(d) {
+        return (d.source === a && d.target === b);
+      })
+    }
+
+    function clearColour(d) {
+      d3.selectAll('.node').select('circle').style('fill', '#A7E2BB')
+    }
+
+    var toggle = 0;
+
+    // http://www.coppelia.io/2014/06/finding-neighbours-in-a-d3-force-directed-layout-2/
+    function updateNeighbours(data){
+    	influences = d3.selectAll('.node').filter(function(n){return isInfluenceOf(data, n)})
+      	var influencesNames = []
+      	var influencedNames = []
+      	influences.each(function(n){if (influencesNames.indexOf(n.name) == -1) {influencesNames.push(n.name)}})
+      	influences.select('circle').style('fill', 'red')
+      	influenced = d3.selectAll('.node').filter(function(n){return isFollowerOf(data, n)})
+      	influenced.each(function(n){if (influencedNames.indexOf(n.name) == -1) {influencedNames.push(n.name)}})
+      	influenced.select('circle').style('fill', '#31333a')
+      	ns = influencesNames.join(', ');
+      	nsd = influencedNames.join(', ');
+
+      	$(philInfluences).css('visibility', 'visible');
+      	$(influenceList).text(ns);
+      	$(philInfluenced).css('visibility', 'visible')
+      	$(influencedList).text(nsd);
+    }
+    
+    function highlightNeighbours(data, index) {
+      if (d3.event.type == 'click'){
+        if (toggle==0){
+          d3.select(this).select('circle').style('fill', 'pink');
+          influences = d3.selectAll('.node').filter(function(n){return isInfluenceOf(data, n)}).select('circle').style('fill', 'red');
+          d3.selectAll('.node').filter(function(n){return isFollowerOf(data, n)}).select('circle').style('fill', '#31333a');
+          displayInfo(data);
+          toggle = 1
+        }
+        else if (toggle==1){
+          clearColour()
+          toggle=0;
+        }
+
+      }
+      else{
+      	clearColour()
+      	d3.select(this).select('circle').style('fill', 'pink')
+      	updateNeighbours(data);
+      	displayInfo(data);
+      	toggle=0;
+    }
+    }
+
+    var color = d3.scale.category20();
+
+    var nodes = []
+    var edges = []
+    var links = []
+
+    $.ajax({
+      url: '/public/graph.json',
+      dataType: 'json',
+      success: function(data){
+        nodes = data.nodes;
+        links = data.links;
+      },
+      async: false
+    });
+
+    // use dobs to calculate x coordinates spread over range determined by range in data.
+    var yobs = nodes.map(function(obj){return obj.yob});
+    var max = Math.max.apply(null, yobs);
+    var min = Math.min.apply(null, yobs);
+
+    var axisScale = d3.scale.pow().exponent(7)
+                    .domain([min, max])
+                    .range([0, width-50]);
+
+    for (i in nodes){
+      nodes[i].sx = axisScale(nodes[i].yob) + 25
+      nodes[i].cx = nodes[i].sx
+    }
+
+    fb_ids = nodes.map(function(obj){
+      return obj.id;
+    });
+    
+    var xAxis = d3.svg.axis()
+         .scale(axisScale)
+         .tickValues([min,1500,1650,1800,1900,max])
+         .tickFormat(d3.format(".0f"));
+
+    svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(25," + 370 + ")")
+			.call(xAxis);
+
+	force
+          .nodes(nodes)
+          .links(links)
+
+
+    var node = svg.selectAll(".node"),
+        link = svg.selectAll(".link");
+    
+    start()
+
+    minDegree = function(weight){
+        node.filter(function(d) {return d.weight < weight}).style("visibility", "hidden");
+        link.filter(function(d) {return d.source.weight < weight || d.target.weight < weight}).style("visibility", "hidden");
+        node.filter(function(d) {return d.weight >= weight}).style("visibility", "visible");
+        link.filter(function(d) {return d.source.weight >= weight && d.target.weight >= weight}).style("visibility", "visible");
+        $("#minDeg").text($("#min_degree").val().toString())
+        // could recalculate positions based on visible date range or add some kind of animation...
+      }
+    
+    minDegree($("#min_degree").val());
+
+    $("#minDeg").text($("#min_degree").val().toString())
+
+    $("#min_degree").on('change', function(){minDegree($(this).val())});
+
+    function start() {
+       // this has to be called before the weights can be assigned.
+       // force.start()
+       // this is initially a list of the 6 svg elements
+       node = node.data(nodes, function(d) {return d.id})
+       link = link.data(links)
+       
+       // the second argument here is a key function, which is very important
+       // https://bost.ocks.org/mike/constancy/
+       
+       
+       // node.enter() is all the new nodes
+       // node.exit() is all the nodes that were in the grpah before but are no longer
+
+       // for some reason calling start twice is doubling the text and circle attributes of my nodes
+       var l = link.enter().append("line")
+       .attr("class", "link")
+
+       var g = node.enter().append("g")
+                .attr("class", "node")
+                .call(drag).on('dblclick', releasenode)
+                .on('mouseover', highlightNeighbours)
+                .on('mouseout', function(d, i) {if (toggle == 0) {clearColour()}})
+                .on('click', highlightNeighbours)
+                
+       
+       force.start()
+
+       
+       l.style("stroke-width", function(d) { return Math.pow((d.source.weight + d.target.weight)/200, 3.5); });
+
+       link.exit().remove()
+       // I should colour influences and followers diferently
+       // I should phaps implement some kind of link highlighting
+       // Definitely should be able to hide nodes somehow.
+        
+       g.append("circle")
+                .attr("class", "node")
+                // .attr("r", 3)
+                .attr("r", function(d) {return Math.max(d.weight / 10, 3)})
+                .style('fill', '#A7E2BB')
+                .style("stroke-width", 2)    // set the stroke width
+                .style("stroke", "black")
+        
+        g.append("text")
+                .attr("dx", function(d) {return Math.max(d.weight/ 10, 3) + 3})
+                .attr("dy", ".35em")
+                // these are distances from the circle (x and y)
+                .text(function(d) { l = d.name.split(" ")
+                            return l[l.length - 1]})
+                .style("font-size", function(d) {return Math.min(d.weight * 12 / 30, 16)})
+                .style("font-weight", 100)
+                .style("font-family", "HelveticaNeue-Light");
+
+         node.exit().remove();
+    }
+	function tick() {
+
+	  link.attr("x1", function(d) { return d.source.cx; })
+	      .attr("y1", function(d) { return d.source.y; })
+	      .attr("x2", function(d) { return d.target.cx; })
+	      .attr("y2", function(d) { return d.target.y; });
+	      // the below is due to the fact that svg g elements are being used.
+	      node.attr("transform", function(d) { return "translate(" + d.cx + "," + Math.max(2, Math.min(d.y, height - 2)) + ")"; });
+	}
+
+	function displayInfo(d) {
+		$("#philName").empty().append(d.name);
+		$("#philBorn").empty().append("b. " + d.yob);
+	}
+</script>

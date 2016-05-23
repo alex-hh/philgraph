@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Simple Sidebar - Start Bootstrap Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/public/css/simple-sidebar.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+    .ui-helper-hidden-accessible { display:none; }
+
+    .ui-autocomplete {
+            font-size: 14px;
+            max-height: 100px;
+            width: 150px;
+            overflow: scroll;
+            list-style-type: none;
+            padding-left: 0;
+            top: 500! important;
+            border-right: 1px solid #e3e3e3;
+            border-left: 1px solid #e3e3e3;
+            border-bottom: 1px solid #e3e3e3;
+            margin-top: 30px;
+            padding-bottom: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+  <nav class="navbar navbar-default" style="margin-bottom: 0; margin-right: -300px;">
+  <div class="container-fluid" style="padding-left: 30px;">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Philosophy Influence Network</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" id="phil" class="form-control" placeholder="Search">
+        </div>
+      </form>
+
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <div class="sidebar-content" style="height: 500px; overflow: scroll;">
+                <div id="philInfo" style="min-height: 365px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;">
+                  <h4 id="philName"></h2>
+                  <span id="philBorn"></span>
+                  <h5 id="philInfluences" style="visibility: hidden;"> Influences: </h5>
+                  <span id="influenceList" style="font-size: 11px;"> </span>
+                  <h5 id="philInfluenced" style="visibility: hidden;"> Influenced: </h5>
+                  <span id="influencedList" style="font-size: 11px;"> </span>
+                </div>
+                <div style="padding-left: 20px; padding-right: 20px;"
+                <label for="min_degree" style="font-weight: 400; width: 100%;">Minimum degree <span class="pull-right" id="minDeg"></span></label>
+                  <input id="min_degree" type="range" name="degree" min="10" max="50" value="20">
+                </div>
+              </div>
+              <!-- <ul>
+                <li>
+                    <a href="#">About</a>
+                </li>
+              </ul> -->
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" style="padding: 0;">
+          <div class="container-fluid">
+            {{ content }}
+          </div>
+        </div>
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/public/js/bootstrap.min.js"></script>
+
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+
+</body>
+
+</html>
