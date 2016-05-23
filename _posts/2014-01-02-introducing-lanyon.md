@@ -7,7 +7,7 @@ This is a collection of pages built to explore the data on philosophical influen
 
 ### Visualizations
 
-* [Philosophy influence network](/graph/)
+* [Philosophy influence network]({{ site.github.url }}/graph/)
 
 ### Links
 
